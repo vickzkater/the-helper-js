@@ -14,8 +14,9 @@ The Helper JS - a lot of JS helper functions that are ready to help in your proj
 - open_window (to open a new window)
 - set_param_url (set URL parameters)
 - numbers_only (sanitizing value of number)
-- username*only (sanitizing value of username - only allow alphanumerics, (.) dot, and (*) underscore)
+- username_only (sanitizing value of username - only allow alphanumerics, (.) dot, and (*) underscore)
 - alphanumerics_only (sanitizing value of text - only allow alphanumerics and whitespace)
+- datetime_format (for get date & time value)
 
 ## How-to-Use
 

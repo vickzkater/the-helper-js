@@ -69,7 +69,7 @@ function replace_all(search, replacement, target) {
  * formats a number with grouped thousands
  *
  * @param {integer} number required
- * @param {char} separator optional
+ * @param {string} separator optional
  */
 function number_format(number, separator = ",") {
     // sanitizing number
@@ -246,4 +246,42 @@ function alphanumerics_only(elm) {
     if (code !== 37 && code !== 39) {
         elm.value = elm.value.replace(/[^a-z0-9A-Z ]/g, "");
     }
+}
+
+/**
+ * for get date & time value, sample: 2021-05-25 08:12:01
+ * 
+ * @param {string} input_datetime optional
+ */
+ function datetime_format(input_datetime = '') {
+    if (input_datetime != '') {
+        var now = new Date(input_datetime);
+    } else {
+        var now = new Date();
+    }
+    
+    var year = now.getFullYear();
+    var mon = now.getMonth() + 1;
+    if (mon < 10) {
+        mon = '0' + mon;
+    }
+    var date = now.getDate();
+    if (date < 10) {
+        date = '0' + date;
+    }
+    var hour = now.getHours();
+    if (hour < 10) {
+        hour = '0' + hour;
+    }
+    var mins = now.getMinutes();
+    if (mins < 10) {
+        mins = '0' + mins;
+    }
+    var secs = now.getSeconds();
+    if (secs < 10) {
+        secs = '0' + secs;
+    }
+
+    var timestamp_now = year + '-' + mon + '-' + date + ' ' + hour + ':' + mins + ':' + secs;
+    return timestamp_now
 }
