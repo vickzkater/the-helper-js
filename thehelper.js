@@ -1,6 +1,6 @@
 /**
  * The Helper JS - a lot of JS helper functions that are ready to help in your project
- * Version: 1.0 (2020-07-04)
+ * Version: 1.0.1 (2022-09-28)
  *
  * Copyright (c) KINIDI Tech and other contributors
  * Released under the MIT license.
@@ -15,48 +15,65 @@
  *
  * @param {element input file form} input
  * @param {string} position_image - (after/before)
+ * @param {string} default_image
+ * @param {string} existing_image - (after/before)
  */
-function readURL(input, position_image = "after") {
+function readURL(input, position_image = "after", image_id = 'none', default_image = 'none', existing_image = 'none') {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
 
         reader.onload = function (e) {
-            if (position_image == "before") {
-                $(input).prev("img").attr("src", e.target.result);
+            if (image_id != 'none') {
+                $('#' + image_id).attr("src", e.target.result);
             } else {
-                $(input).next("img").attr("src", e.target.result);
+                if (position_image == "before") {
+                    $(input).prev("img").attr("src", e.target.result);
+                } else {
+                    $(input).next("img").attr("src", e.target.result);
+                }
             }
         };
 
         reader.readAsDataURL(input.files[0]);
+    } else if (existing_image != 'none') {
+        if (image_id != 'none') {
+            $('#' + image_id).attr("src", existing_image);
+        } else {
+            if (position_image == "before") {
+                $(input).prev("img").attr("src", existing_image);
+            } else {
+                $(input).next("img").attr("src", existing_image);
+            }
+        }
+    } else if (default_image != 'none') {
+        if (image_id != 'none') {
+            $('#' + image_id).attr("src", default_image);
+        } else {
+            if (position_image == "before") {
+                $(input).prev("img").attr("src", default_image);
+            } else {
+                $(input).next("img").attr("src", default_image);
+            }
+        }
     }
 }
 
 /**
  * for reset image preview to default image (no image)
  *
- * @param {element input file form} input
+ * @param {element id of image} image_id
  * @param {string} no_image - image "no image" URL
- * @param {string} position_image - (after/before)
  */
-function reset_img_preview(input, no_image, position_image = "after") {
+function reset_img_preview(image_id, no_image) {
     if (confirm("Are you sure to delete this uploaded image?")) {
-        if (position_image == "before") {
-            $(input).prev("img").attr("src", no_image);
-        } else {
-            $(input).next("img").attr("src", no_image);
-        }
-        $(input + "-delbtn").hide();
-        $(input + "-delete").val("yes");
+        $('#' + image_id).attr("src", no_image);
+        $('#' + image_id + "-delbtn").hide();
+        $('#' + image_id + "-delete").val("yes");
     }
 }
 
 /**
- * for replaces some characters with some other characters in a string
- *
- * @param {element input file form} input
- * @param {string} no_image - image "no image" URL
- * @param {string} position_image - (after/before)
+ * for replaces some characters with some other characters in a string.
  */
 function replace_all(search, replacement, target) {
     if (target !== null) {
@@ -66,12 +83,12 @@ function replace_all(search, replacement, target) {
 }
 
 /**
- * formats a number with grouped thousands
+ * formats a number with grouped thousands.
  *
  * @param {integer} number required
- * @param {string} separator optional
+ * @param {char} separator optional
  */
-function number_format(number, separator = ",") {
+function number_formatting(number, separator = ",") {
     // sanitizing number
     number = replace_all(" ", "", number);
     number = replace_all(",", "", number);
@@ -94,7 +111,7 @@ function number_format(number, separator = ",") {
                 output += number.substring(mod + 3 * i, mod + 3 * i + 3);
             else
                 output +=
-                    separator + number.substring(mod + 3 * i, mod + 3 * i + 3);
+                separator + number.substring(mod + 3 * i, mod + 3 * i + 3);
         }
         return negative + output;
     } else return negative + number;
@@ -107,25 +124,22 @@ function number_format(number, separator = ",") {
  * @param {boolean} alert_copied
  * @param {string} alert_message
  */
-function click_to_copy(
-    element_id,
+function copy_to_clipboard(
+    element,
     alert_copied = true,
     alert_message = "Copied the text: "
 ) {
-    /* Get the text field */
-    var copyText = document.getElementById(element_id);
-
-    /* Select the text field */
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); /*For mobile devices*/
-
-    /* Copy the text inside the text field */
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val($(element).text()).select();
     document.execCommand("copy");
-
+    
     if (alert_copied) {
         /* Alert the copied text */
-        alert(alert_message + copyText.value);
+        alert(alert_message + $temp.val());
     }
+
+    $temp.remove();
 }
 
 /**
@@ -249,17 +263,74 @@ function alphanumerics_only(elm) {
 }
 
 /**
- * for get date & time value, sample: 2021-05-25 08:12:01
+ * sanitizing value of text - only allow alphabet and whitespace
  * 
- * @param {string} input_datetime optional
+ * @param {element input form} elm 
  */
- function datetime_format(input_datetime = '') {
+ function alphabet_only(elm) {
+    var code = elm.which ? elm.which : elm.keyCode;
+
+    // 37 = left arrow, 39 = right arrow.
+    if (code !== 37 && code !== 39) {
+        elm.value = elm.value.replace(/[^a-zA-Z ]/g, "");
+    }
+}
+
+/**
+ * for remove uploaded file
+ *
+ * @param {element id} input
+ */
+function remove_uploaded_file(input) {
+    if (confirm("Are you sure to delete this uploaded file?")) {
+        $(input + "-file-preview").remove();
+        $(input + "-delbtn").hide();
+        $(input + "-delete").val("yes");
+    }
+}
+
+/**
+ * for show/hide input password
+ *
+ * @param {element id} id_name
+ */
+function viewable_password(id_name) {
+    var element = document.getElementById(id_name);
+    var element_icon = document.getElementById("viewable-" + id_name);
+    var arr, replaced_icon;
+    if (element.type == "password") {
+        element.type = "text";
+
+        element_icon.className = element_icon.className.replace(/\bfa-eye-slash\b/g, "");
+
+        replaced_icon = "fa-eye"
+        arr = element_icon.className.split(" ");
+        if (arr.indexOf(replaced_icon) == -1) {
+            element_icon.className += " " + replaced_icon;
+        }
+    } else {
+        element.type = "password";
+
+        element_icon.className = element_icon.className.replace(/\bfa-eye\b/g, "");
+
+        replaced_icon = "fa-eye-slash"
+        arr = element_icon.className.split(" ");
+        if (arr.indexOf(replaced_icon) == -1) {
+            element_icon.className += " " + replaced_icon;
+        }
+    }
+}
+
+/**
+ * for get date & time value, sample: 2021-05-25 08:12:01
+ */
+function datetime_format(input_datetime = '') {
     if (input_datetime != '') {
         var now = new Date(input_datetime);
     } else {
         var now = new Date();
     }
-    
+
     var year = now.getFullYear();
     var mon = now.getMonth() + 1;
     if (mon < 10) {
@@ -284,4 +355,35 @@ function alphanumerics_only(elm) {
 
     var timestamp_now = year + '-' + mon + '-' + date + ' ' + hour + ':' + mins + ':' + secs;
     return timestamp_now
+}
+
+function scroll_to_elm_id(identifier) {
+    var elm_identifier = document.getElementById(identifier);
+    if (elm_identifier != null) {
+        setTimeout(function () {
+            elm_identifier.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }, 500);
+    }
+}
+
+/**
+ * validate file size
+ *
+ * @param {element input text} elm
+ * @param {integer} max_size - in bytes, example: 2097152 coz 2 MB = 2097152 Bytes
+ * @param {integer} max_size_label - example: 2 MB
+ */
+function validate_file_size(elm, max_size = 2097152, max_size_label = "2 MB") {
+    var file = elm.files[0];
+
+    if (file && file.size < max_size) {
+        // CONTINUE
+    } else {
+        // PREVENT AND DISPLAY ERROR
+        alert('File size cannot be greater than ' + max_size_label);
+        // RESET INPUT FILE VALUE
+        elm.value = '';
+    }
 }
