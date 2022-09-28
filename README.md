@@ -10,13 +10,17 @@ The Helper JS - a lot of JS helper functions that are ready to help in your proj
 - reset_img_preview (for reset image preview to default image (no image))
 - replace_all (for replaces some characters with some other characters in a string)
 - number_format (formats a number with grouped thousands)
-- click_to_copy (copy text to the clipboard)
+- copy_to_clipboard (copy text to the clipboard)
 - open_window (to open a new window)
 - set_param_url (set URL parameters)
 - numbers_only (sanitizing value of number)
 - username_only (sanitizing value of username - only allow alphanumerics, (.) dot, and (*) underscore)
 - alphanumerics_only (sanitizing value of text - only allow alphanumerics and whitespace)
 - datetime_format (for get date & time value)
+- alphabet_only (sanitizing value of text - only allow alphabet and whitespace)
+- viewable_password (for show/hide input password)
+- scroll_to_elm_id
+- validate_file_size
 
 ## How-to-Use
 
